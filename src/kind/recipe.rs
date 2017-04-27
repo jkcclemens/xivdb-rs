@@ -1,0 +1,20 @@
+#[derive(Debug, Deserialize)]
+pub struct XivDbRecipe {
+ pub class_name: String,
+ pub color: String,
+ pub icon: String,
+ pub icon_lodestone: String,
+ pub id: u64,
+ pub item_name: String,
+ pub level: u64,
+ pub level_diff: u64,
+ pub level_view: u64,
+ pub masterbook: Option<String>,
+ pub name: String,
+ pub stars: u64,
+ pub stars_html: String,
+ pub url: String,
+ pub url_api: String,
+ pub url_type: String,
+ pub url_xivdb: String,
+}
