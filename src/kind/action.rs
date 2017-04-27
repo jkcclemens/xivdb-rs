@@ -60,7 +60,8 @@ pub struct XivDbAction {
   pub spell_group: u64,
   pub status_gain_self: u64,
   pub status_required: u64,
-  pub type: u64,
+  #[serde(rename = "type")]
+  pub type_: u64,
   pub type_name: String,
   pub upgrades: Vec<Value>,
   pub url: String,

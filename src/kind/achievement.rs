@@ -48,7 +48,8 @@ pub struct XivDbAchievement {
     pub requirement_8: u64,
     pub requirement_9: u64,
     pub title: Option<Value>,
-    pub type: u64,
+    #[serde(rename = "type")]
+    pub type_: u64,
     pub type_name: String,
     pub url: String,
     pub url_api: String,

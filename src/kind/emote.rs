@@ -1,5 +1,3 @@
-use serde_json::Value;
-
 use kind::patch::XivDbPatch;
 
 #[derive(Debug, Deserialize)]
@@ -20,7 +18,7 @@ pub struct XivDbEmote {
   pub name_fr: String,
   pub name_ja: String,
   pub patch: XivDbPatch,
-  pub text_command: XivdbEmoteTextCommand,
+  pub text_command: XivDbEmoteTextCommand,
   pub url: String,
   pub url_api: String,
   pub url_type: String,

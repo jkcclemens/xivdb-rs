@@ -152,6 +152,7 @@ pub struct XivDbItem {
   pub _type: String
 }
 
+#[derive(Debug, Deserialize)]
 pub struct XivDbItemAttributes {
   pub auto_attack: u64,
   pub auto_attack_hq: u64,

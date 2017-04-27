@@ -1,6 +1,6 @@
-extern crate lalafell_bot;
+extern crate xivdb;
 
-use lalafell_bot::XivDb;
+use xivdb::XivDb;
 
 use std::env::args;
 use std::collections::HashMap;
