@@ -4,7 +4,7 @@ extern crate serde_json;
 #[macro_use]
 extern crate error_chain;
 extern crate hyper;
-extern crate hyper_native_tls;
+extern crate hyper_rustls;
 extern crate url;
 
 pub mod kind;
@@ -14,7 +14,6 @@ use std::collections::HashMap;
 
 use hyper::Client;
 use hyper::net::HttpsConnector;
-use hyper_native_tls::NativeTlsClient;
 
 use url::Url;
 
@@ -34,10 +33,8 @@ impl Default for XivDb {
 
 impl XivDb {
   pub fn new() -> XivDb {
-    let ssl = NativeTlsClient::new().unwrap();
-    let connector = HttpsConnector::new(ssl);
     XivDb {
-      client: Client::with_connector(connector)
+      client: Client::with_connector(HttpsConnector::new(hyper_rustls::TlsClient::new()))
     }
   }
 
