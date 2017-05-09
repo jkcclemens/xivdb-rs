@@ -15,7 +15,11 @@ fn main() {
   let xivdb = XivDb::default();
 
   let result = xivdb.search("Hildibrand", Default::default()).unwrap();
-  // There are 60 Hildbrand NPCs.
-  println!("There are {} Hildbrand NPCs.", result.npcs.unwrap().results.len());
+
+  let npcs = result.npcs.unwrap();
+  // There are 60 Hildbrand NPCs on page 1.
+  println!("There are {} Hildbrand NPCs on page {}.",
+    npcs.results.len(),
+    npcs.paging.page);
 }
 ```
