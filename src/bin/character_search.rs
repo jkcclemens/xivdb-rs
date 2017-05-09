@@ -19,7 +19,7 @@ fn main() {
   params.insert(String::from("one"), String::from("characters"));
 
   let xivdb = XivDb::default();
-  let results = match xivdb.search(name, params) {
+  let results = match xivdb.search(&name, params) {
     Ok(r) => r,
     Err(e) => {
       println!("could not search: {}", e);

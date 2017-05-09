@@ -38,10 +38,10 @@ impl XivDb {
     }
   }
 
-  pub fn search(&self, string: String, other_params: HashMap<String, String>) -> Result<XivDbSearchResult> {
+  pub fn search(&self, string: &str, other_params: HashMap<String, String>) -> Result<XivDbSearchResult> {
     let mut url = Url::parse(&format!("{}/search", API_BASE_URL)).chain_err(|| "could not parse API base url")?;
     url.query_pairs_mut()
-      .append_pair("string", &string)
+      .append_pair("string", string)
       .extend_pairs(other_params);
     let res = self.client.get(url).send().chain_err(|| "error downloading from xivdb's api")?;
     serde_json::from_reader(res).chain_err(|| "error deserializing downloaded data")
