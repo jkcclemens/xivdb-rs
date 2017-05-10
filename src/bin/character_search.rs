@@ -3,7 +3,6 @@ extern crate xivdb;
 use xivdb::XivDb;
 
 use std::env::args;
-use std::collections::HashMap;
 use std::io::{self, Write};
 
 fn main() {
@@ -15,11 +14,8 @@ fn main() {
     }
   };
 
-  let mut params = HashMap::new();
-  params.insert(String::from("one"), String::from("characters"));
-
   let xivdb = XivDb::default();
-  let results = match xivdb.search(&name, params) {
+  let results = match xivdb.search(&name, &[("one", "characters")]) {
     Ok(r) => r,
     Err(e) => {
       println!("could not search: {}", e);
