@@ -3,7 +3,7 @@ extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate error_chain;
-extern crate hyper;
+extern crate make_hyper_great_again as hyper;
 extern crate hyper_rustls;
 extern crate url;
 
@@ -13,7 +13,6 @@ pub mod error;
 use std::collections::HashMap;
 
 use hyper::Client;
-use hyper::net::HttpsConnector;
 
 use url::Url;
 
@@ -26,7 +25,7 @@ const API_BASE_URL: &'static str = "https://api.xivdb.com";
 pub const DEFAULT_PARAMS: &'static [(String, String)] = &[];
 
 pub struct XivDb {
-  client: Client
+  client: Client<hyper_rustls::HttpsConnector>
 }
 
 impl Default for XivDb {
@@ -36,7 +35,7 @@ impl Default for XivDb {
 impl XivDb {
   pub fn new() -> XivDb {
     XivDb {
-      client: Client::with_connector(HttpsConnector::new(hyper_rustls::TlsClient::new()))
+      client: Client::create_connector(|c| hyper_rustls::HttpsConnector::new(4, &c.handle())).unwrap()
     }
   }
 
