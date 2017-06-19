@@ -24,20 +24,15 @@ const API_BASE_URL: &'static str = "https://api.xivdb.com";
 
 pub const DEFAULT_PARAMS: &'static [(String, String)] = &[];
 
-pub struct XivDb {
-  client: Client<hyper_rustls::HttpsConnector>
+thread_local! {
+  static CLIENT: Client<hyper_rustls::HttpsConnector> = Client::create_connector(|c| hyper_rustls::HttpsConnector::new(4, &c.handle())).unwrap();
 }
 
-impl Default for XivDb {
-  fn default() -> XivDb { XivDb::new() }
-}
+#[derive(Default)]
+pub struct XivDb;
 
 impl XivDb {
-  pub fn new() -> XivDb {
-    XivDb {
-      client: Client::create_connector(|c| hyper_rustls::HttpsConnector::new(4, &c.handle())).unwrap()
-    }
-  }
+  pub fn new() -> XivDb { Default::default() }
 
   pub fn search<K: AsRef<str>, V: AsRef<str>>(&self, string: &str, other_params: &[(K, V)]) -> Result<XivDbSearchResult> {
     let other_params: HashMap<String, String> = other_params.iter()
@@ -47,13 +42,13 @@ impl XivDb {
     url.query_pairs_mut()
       .append_pair("string", string)
       .extend_pairs(other_params);
-    let res = self.client.get(url).send().chain_err(|| "error downloading from xivdb's api")?;
+    let res = CLIENT.with(|c| c.get(url).send().chain_err(|| "error downloading from xivdb's api"))?;
     serde_json::from_reader(res).chain_err(|| "error deserializing downloaded data")
   }
 
   pub fn character(&self, id: u64) -> Result<XivDbCharacter> {
     let url = format!("{}/character/{}", API_BASE_URL, id);
-    let res = self.client.get(&url).send().chain_err(|| "error downloading from xivdb's api")?;
+    let res = CLIENT.with(|c| c.get(&url).send().chain_err(|| "error downloading from xivdb's api"))?;
     serde_json::from_reader(res).chain_err(|| "error deserializing downloaded data")
   }
 }
