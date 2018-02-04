@@ -3,8 +3,7 @@ extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate error_chain;
-extern crate make_hyper_great_again as hyper;
-extern crate hyper_rustls;
+extern crate reqwest;
 extern crate url;
 
 pub mod kind;
@@ -12,7 +11,7 @@ pub mod error;
 
 use std::collections::HashMap;
 
-use hyper::Client;
+use reqwest::Client;
 
 use url::Url;
 
@@ -20,20 +19,23 @@ use kind::prelude::*;
 use kind::search::prelude::*;
 use error::*;
 
-const API_BASE_URL: &'static str = "https://api.xivdb.com";
+const API_BASE_URL: &str = "https://api.xivdb.com";
 
-pub const DEFAULT_PARAMS: &'static [(String, String)] = &[];
+pub const DEFAULT_PARAMS: &[(String, String)] = &[];
 
-thread_local! {
-  static CLIENT: Client<hyper_rustls::HttpsConnector> = Client::create_connector(|c| hyper_rustls::HttpsConnector::new(4, &c.handle())).unwrap();
+pub struct XivDb {
+  client: Client
 }
 
-#[derive(Default)]
-pub struct XivDb;
+impl Default for XivDb {
+  fn default() -> Self {
+    XivDb {
+      client: Client::new()
+    }
+  }
+}
 
 impl XivDb {
-  pub fn new() -> XivDb { Default::default() }
-
   pub fn search<K: AsRef<str>, V: AsRef<str>>(&self, string: &str, other_params: &[(K, V)]) -> Result<XivDbSearchResult> {
     let other_params: HashMap<String, String> = other_params.iter()
       .map(|&(ref k, ref v)| (k.as_ref().to_string(), v.as_ref().to_string()))
@@ -42,13 +44,13 @@ impl XivDb {
     url.query_pairs_mut()
       .append_pair("string", string)
       .extend_pairs(other_params);
-    let res = CLIENT.with(|c| c.get(url).send().chain_err(|| "error downloading from xivdb's api"))?;
+    let res = self.client.get(url).send().chain_err(|| "error downloading from xivdb's api")?;
     serde_json::from_reader(res).chain_err(|| "error deserializing downloaded data")
   }
 
   pub fn character(&self, id: u64) -> Result<XivDbCharacter> {
     let url = format!("{}/character/{}", API_BASE_URL, id);
-    let res = CLIENT.with(|c| c.get(&url).send().chain_err(|| "error downloading from xivdb's api"))?;
+    let res = self.client.get(&url).send().chain_err(|| "error downloading from xivdb's api")?;
     serde_json::from_reader(res).chain_err(|| "error deserializing downloaded data")
   }
 }
