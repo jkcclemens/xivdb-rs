@@ -10,6 +10,7 @@ pub mod kind;
 pub mod error;
 
 use std::collections::HashMap;
+use std::time::Duration;
 
 use reqwest::Client;
 
@@ -29,13 +30,19 @@ pub struct XivDb {
 
 impl Default for XivDb {
   fn default() -> Self {
-    XivDb {
-      client: Client::new()
-    }
+    XivDb::new(Duration::from_secs(3)).expect("client failed to build")
   }
 }
 
 impl XivDb {
+  pub fn new<T: Into<Option<Duration>>>(timeout: T) -> reqwest::Result<Self> {
+    Ok(XivDb {
+      client: Client::builder()
+        .timeout(timeout)
+        .build()?
+    })
+  }
+
   pub fn search<K: AsRef<str>, V: AsRef<str>>(&self, string: &str, other_params: &[(K, V)]) -> Result<XivDbSearchResult> {
     let other_params: HashMap<String, String> = other_params.iter()
       .map(|&(ref k, ref v)| (k.as_ref().to_string(), v.as_ref().to_string()))
